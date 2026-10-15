@@ -39,6 +39,9 @@
   .giro{width:30px;height:30px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;
         animation:g .8s linear infinite}
   @keyframes g{to{transform:rotate(360deg)}}
+  .config{width:100%;max-width:340px;display:flex;flex-direction:column;gap:10px}
+  .config input{width:100%;border:0;border-radius:12px;padding:14px;font-size:15px;font-family:inherit}
+  .enlace{background:none;border:0;color:#fff;opacity:.8;text-decoration:underline;font-size:14px;font-family:inherit;cursor:pointer}
   .btn{border:0;border-radius:14px;background:#fff;color:var(--pri2);font-size:17px;font-weight:700;
        min-height:52px;padding:0 28px;cursor:pointer;font-family:inherit}
 </style>
@@ -50,7 +53,12 @@
   <h1>Registro de máquinas</h1>
   <div class="giro" id="giro"></div>
   <p id="estado">Cargando…</p>
+  <div class="config" id="config" hidden>
+    <input id="urlInput" type="url" inputmode="url" autocomplete="off" placeholder="https://script.google.com/macros/s/…/exec">
+    <button class="btn" id="guardarUrl">Guardar y abrir</button>
+  </div>
   <button class="btn" id="reintentar" hidden>Reintentar</button>
+  <button class="enlace" id="cambiar" hidden>Cambiar dirección del formulario</button>
 </div>
 
 <iframe id="marco" title="Registro de máquinas" allow="clipboard-write; vibrate"></iframe>
@@ -60,22 +68,58 @@
   const marco = $('marco');
   let cargado = false, espera;
 
+  // Limpia lo que se pegue (espacios, comillas) y valida que sea la URL de Apps Script
+  function limpiarUrl(u) {
+    u = String(u || '').trim().replace(/^['"\s]+|['"\s]+$/g, '');
+    return /^https:\/\/script\.google\.com\/.+\/(exec|dev)(\?.*)?$/.test(u) ? u : '';
+  }
+  const leerLocal = () => { try { return localStorage.getItem('maquinas_url') || ''; } catch (e) { return ''; } };
+  const guardarLocal = u => { try { localStorage.setItem('maquinas_url', u); } catch (e) {} };
+
+  // Orden: 1) URL_APP en este archivo  2) ?url=... en el enlace  3) la guardada en este celular
+  function direccion() {
+    return limpiarUrl(URL_APP) ||
+           limpiarUrl(new URLSearchParams(location.search).get('url')) ||
+           limpiarUrl(leerLocal());
+  }
+
   function mostrar(texto, conBoton) {
     $('inicio').classList.remove('oculta');
     $('estado').textContent = texto;
     $('giro').hidden = !!conBoton;
     $('reintentar').hidden = !conBoton;
+    $('cambiar').hidden = !conBoton;
+    $('config').hidden = true;
   }
 
-  function cargar() {
-    if (!/^https:\/\/script\.google(usercontent)?\.com\//.test(URL_APP)) {
-      mostrar('Falta configurar la dirección del formulario. Edita URL_APP en index.html.', false);
-      $('giro').hidden = true; return;
+  function pedirUrl(texto) {
+    mostrar(texto, false);
+    $('giro').hidden = true; $('cambiar').hidden = true;
+    $('config').hidden = false;
+    $('urlInput').value = leerLocal();
+  }
+
+  $('guardarUrl').onclick = () => {
+    const u = limpiarUrl($('urlInput').value);
+    if (!u) { $('estado').textContent = 'Esa dirección no es válida. Debe empezar por https://script.google.com/ y terminar en /exec'; return; }
+    guardarLocal(u); cargar(u);
+  };
+  $('cambiar').onclick = () => pedirUrl('Pega la dirección de la aplicación web (termina en /exec).');
+
+  function cargar(forzada) {
+    const URL = (typeof forzada === 'string' && forzada) || direccion();
+    if (!URL) {
+      const editada = URL_APP && !URL_APP.includes('PEGA_AQUI');
+      pedirUrl(editada
+        ? 'La dirección escrita en index.html no es válida. Pega aquí la URL de la aplicación web (termina en /exec).'
+        : 'Pega la dirección de la aplicación web de Apps Script (termina en /exec). Solo se pide una vez.');
+      return;
     }
     if (!navigator.onLine) { mostrar('Sin conexión a internet. Conéctate para registrar.', true); return; }
     cargado = false;
     mostrar('Cargando…', false);
-    marco.src = URL_APP + (URL_APP.includes('?') ? '&' : '?') + 't=' + Date.now();
+    $('cambiar').hidden = true;
+    marco.src = URL + (URL.includes('?') ? '&' : '?') + 't=' + Date.now();
     clearTimeout(espera);
     espera = setTimeout(() => { if (!cargado) mostrar('Está tardando más de lo normal. Revisa tu conexión.', true); }, 25000);
   }
@@ -86,9 +130,9 @@
     setTimeout(() => $('inicio').classList.add('oculta'), 400);
   });
 
-  $('reintentar').onclick = cargar;
+  $('reintentar').onclick = () => cargar();
   window.addEventListener('offline', () => mostrar('Se perdió la conexión. Cuando vuelva, toca Reintentar.', true));
-  window.addEventListener('online', () => { if (!$('inicio').classList.contains('oculta')) cargar(); });
+  window.addEventListener('online', () => { if (!$('inicio').classList.contains('oculta') && $('config').hidden) cargar(); });
 
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
   cargar();
