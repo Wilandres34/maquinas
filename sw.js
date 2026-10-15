@@ -1,6 +1,6 @@
 // Guarda la "cáscara" de la app para que abra rápido y muestre el aviso de sin conexión.
 // El formulario siempre se carga en vivo desde Google (nunca se guarda una versión vieja).
-const CACHE = 'maquinas-v1';
+const CACHE = 'maquinas-v2';
 const ARCHIVOS = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png',
                   'icon-maskable-512.png', 'apple-touch-icon.png', 'favicon.png'];
 

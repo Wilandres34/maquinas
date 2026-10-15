@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Máquinas</title>
-<meta name="theme-color" content="#0f766e">
+<title>Mundo Casino 777</title>
+<meta name="theme-color" content="#0284c7">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Máquinas">
+<meta name="apple-mobile-web-app-title" content="Mundo Casino">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -17,11 +17,12 @@
      ÚNICO CAMBIO NECESARIO: pega aquí la URL de tu aplicación web de
      Apps Script (la que termina en /exec).
      ===================================================================== */
-  const URL_APP = 'https://script.google.com/macros/s/AKfycbz2BOMpYV_TNJ6FOfKV2mbbBR9dFQZ1V9BKR5gTfQ4LzQ1kfukUpwQd5xpdObtQhxvt/exec';
+  const URL_APP = 'PEGA_AQUI_LA_URL_DE_TU_APLICACION_WEB';
 </script>
 <style>
-  :root{--pri:#0f766e;--pri2:#0b5d57}
+  :root{--pri:#0284c7;--pri2:#0369a1}
   *{box-sizing:border-box}
+  [hidden]{display:none!important}
   html,body{margin:0;height:100%;overflow:hidden;background:var(--pri);
             font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overscroll-behavior:none}
   /* El formulario ocupa toda la pantalla respetando la muesca y la barra de gestos */
@@ -30,10 +31,13 @@
   body::after{content:"";position:fixed;left:0;right:0;bottom:0;height:env(safe-area-inset-bottom);background:#fff;pointer-events:none}
 
   .pantalla{position:fixed;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;
-            gap:18px;background:var(--pri);color:#fff;text-align:center;padding:24px;transition:opacity .35s}
+            gap:18px;background:linear-gradient(135deg,#38bdf8,#0ea5e9 45%,#0369a1);color:#fff;text-align:center;padding:24px;transition:opacity .35s}
   .pantalla.oculta{opacity:0;pointer-events:none}
   .pantalla img{width:104px;height:104px;border-radius:24px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
-  .pantalla h1{margin:0;font-size:22px}
+  .pantalla h1{margin:0;line-height:1}
+  .pantalla h1 small{display:block;font-size:13px;letter-spacing:.32em;font-weight:800}
+  .pantalla h1 span{font-size:34px;font-weight:900;text-transform:uppercase;text-shadow:0 2px 0 rgba(3,60,100,.35)}
+  .pantalla h1 em{font-style:normal;color:#fbbf24;text-shadow:0 2px 0 #b45309,0 0 14px rgba(251,191,36,.6)}
   .pantalla p{margin:0;opacity:.85;font-size:15px;max-width:300px;line-height:1.4}
   .giro{width:30px;height:30px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;
         animation:g .8s linear infinite}
@@ -49,7 +53,7 @@
 
 <div id="inicio" class="pantalla">
   <img src="icon-192.png" alt="">
-  <h1>Registro de máquinas</h1>
+  <h1><small>MUNDO</small><span>Casino <em>777</em></span></h1>
   <div class="giro" id="giro"></div>
   <p id="estado">Cargando…</p>
   <div class="config" id="config" hidden>
