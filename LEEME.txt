@@ -1,0 +1,12 @@
+APP "MÁQUINAS" – Cómo publicarla
+================================
+1. Abre index.html y pega la URL de tu aplicación web de Apps Script (termina en /exec)
+   en la línea:  const URL_APP = 'PEGA_AQUI_LA_URL_DE_TU_APLICACION_WEB';
+2. Sube TODOS los archivos de esta carpeta a GitHub Pages (gratis):
+   - github.com > New repository > nombre: maquinas > Public > Create
+   - "uploading an existing file" > arrastra los archivos > Commit changes
+   - Settings > Pages > Branch: main / (root) > Save
+   - En 1-2 minutos queda en: https://TU-USUARIO.github.io/maquinas/
+3. Instalar en cada celular:
+   - Android (Chrome): abre el enlace > menú ⋮ > "Instalar aplicación"
+   - iPhone (Safari): abre el enlace > Compartir > "Agregar a inicio"

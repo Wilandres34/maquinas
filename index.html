@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Máquinas</title>
+<meta name="theme-color" content="#0f766e">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Máquinas">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<script>
+  /* =====================================================================
+     ÚNICO CAMBIO NECESARIO: pega aquí la URL de tu aplicación web de
+     Apps Script (la que termina en /exec).
+     ===================================================================== */
+  const URL_APP = 'PEGA_AQUI_LA_URL_DE_TU_APLICACION_WEB';
+</script>
+<style>
+  :root{--pri:#0f766e;--pri2:#0b5d57}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;overflow:hidden;background:var(--pri);
+            font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overscroll-behavior:none}
+  /* El formulario ocupa toda la pantalla respetando la muesca y la barra de gestos */
+  #marco{position:fixed;top:env(safe-area-inset-top);left:0;right:0;bottom:0;
+         width:100%;height:calc(100% - env(safe-area-inset-top));border:0;background:#eef2f1;
+         padding-bottom:env(safe-area-inset-bottom)}
+  body::after{content:"";position:fixed;left:0;right:0;bottom:0;height:env(safe-area-inset-bottom);background:#fff;pointer-events:none}
+
+  .pantalla{position:fixed;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;
+            gap:18px;background:var(--pri);color:#fff;text-align:center;padding:24px;transition:opacity .35s}
+  .pantalla.oculta{opacity:0;pointer-events:none}
+  .pantalla img{width:104px;height:104px;border-radius:24px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+  .pantalla h1{margin:0;font-size:22px}
+  .pantalla p{margin:0;opacity:.85;font-size:15px;max-width:300px;line-height:1.4}
+  .giro{width:30px;height:30px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;
+        animation:g .8s linear infinite}
+  @keyframes g{to{transform:rotate(360deg)}}
+  .btn{border:0;border-radius:14px;background:#fff;color:var(--pri2);font-size:17px;font-weight:700;
+       min-height:52px;padding:0 28px;cursor:pointer;font-family:inherit}
+</style>
+</head>
+<body>
+
+<div id="inicio" class="pantalla">
+  <img src="icon-192.png" alt="">
+  <h1>Registro de máquinas</h1>
+  <div class="giro" id="giro"></div>
+  <p id="estado">Cargando…</p>
+  <button class="btn" id="reintentar" hidden>Reintentar</button>
+</div>
+
+<iframe id="marco" title="Registro de máquinas" allow="clipboard-write; vibrate"></iframe>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const marco = $('marco');
+  let cargado = false, espera;
+
+  function mostrar(texto, conBoton) {
+    $('inicio').classList.remove('oculta');
+    $('estado').textContent = texto;
+    $('giro').hidden = !!conBoton;
+    $('reintentar').hidden = !conBoton;
+  }
+
+  function cargar() {
+    if (!/^https:\/\/script\.google(usercontent)?\.com\//.test(URL_APP)) {
+      mostrar('Falta configurar la dirección del formulario. Edita URL_APP en index.html.', false);
+      $('giro').hidden = true; return;
+    }
+    if (!navigator.onLine) { mostrar('Sin conexión a internet. Conéctate para registrar.', true); return; }
+    cargado = false;
+    mostrar('Cargando…', false);
+    marco.src = URL_APP + (URL_APP.includes('?') ? '&' : '?') + 't=' + Date.now();
+    clearTimeout(espera);
+    espera = setTimeout(() => { if (!cargado) mostrar('Está tardando más de lo normal. Revisa tu conexión.', true); }, 25000);
+  }
+
+  marco.addEventListener('load', () => {
+    if (!marco.src) return;
+    cargado = true; clearTimeout(espera);
+    setTimeout(() => $('inicio').classList.add('oculta'), 400);
+  });
+
+  $('reintentar').onclick = cargar;
+  window.addEventListener('offline', () => mostrar('Se perdió la conexión. Cuando vuelva, toca Reintentar.', true));
+  window.addEventListener('online', () => { if (!$('inicio').classList.contains('oculta')) cargar(); });
+
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+  cargar();
+</script>
+</body>
+</html>
