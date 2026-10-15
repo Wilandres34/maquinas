@@ -25,9 +25,8 @@
   html,body{margin:0;height:100%;overflow:hidden;background:var(--pri);
             font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overscroll-behavior:none}
   /* El formulario ocupa toda la pantalla respetando la muesca y la barra de gestos */
-  #marco{position:fixed;top:env(safe-area-inset-top);left:0;right:0;bottom:0;
-         width:100%;height:calc(100% - env(safe-area-inset-top));border:0;background:#eef2f1;
-         padding-bottom:env(safe-area-inset-bottom)}
+  #marco{position:fixed;left:0;top:env(safe-area-inset-top);display:block;border:0;background:#eef2f1;
+         width:100%;height:calc(100% - env(safe-area-inset-top) - env(safe-area-inset-bottom))}
   body::after{content:"";position:fixed;left:0;right:0;bottom:0;height:env(safe-area-inset-bottom);background:#fff;pointer-events:none}
 
   .pantalla{position:fixed;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;
